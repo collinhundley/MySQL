@@ -36,11 +36,12 @@ public class MySQL {
     ///
     /// - Parameters:
     ///   - settings: The MySQL connection settings.
-    ///   - poolSize: The maximum size to which the connection pool may grow.
+    ///   - initialPoolSize: The initial number of connections in the pool.
+    ///   - maxPoolSize: The maximum size to which the connection pool may grow.
     /// - Throws: `MySQL.Error` if an error is encountered connecting to the database.
-    public init(settings: MySQL.Settings, poolSize: Int) throws {
-        self.connectionPool = try ConnectionPool(initialCapacity: 1,
-                                                 maxCapacity: poolSize,
+    public init(settings: MySQL.Settings, initialPoolSize: Int, maxPoolSize: Int) throws {
+        self.connectionPool = try ConnectionPool(initialCapacity: initialPoolSize,
+                                                 maxCapacity: maxPoolSize,
                                                  settings: settings)
     }
     
