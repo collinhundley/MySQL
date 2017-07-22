@@ -229,7 +229,15 @@ public class ResultFetcher {
                  MYSQL_TYPE_MEDIUM_BLOB,
                  MYSQL_TYPE_LONG_BLOB,
                  MYSQL_TYPE_BIT:
-                row.append(Data(bytes: buffer, count: getLength(bind)))
+                // Note: MySQL returns all TEXT types as BLOBs.
+                // So, here we check if the data can be interpreted as a String and return it if so.
+                // Otherwise, we return the raw data.
+                let data = Data(bytes: buffer, count: getLength(bind))
+                if let str = String(data: data, encoding: .utf8) {
+                    row.append(str)
+                } else {
+                    row.append(data)
+                }
             case MYSQL_TYPE_TIME:
                 let time = buffer.load(as: MYSQL_TIME.self)
                 row.append("\(pad(time.hour)):\(pad(time.minute)):\(pad(time.second))")
