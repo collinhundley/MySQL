@@ -50,7 +50,7 @@ class Connection {
     
     /// State variable identifiying whether the connection is currently active.
     public var isConnected: Bool {
-        return self.mysql != nil
+        return self.mysql != nil && mysql_ping(mysql) == 0
     }
     
     
@@ -91,6 +91,13 @@ class Connection {
     /// Establish a connection with the database.
     private func connect() throws {
         let mysql: UnsafeMutablePointer<MYSQL> = self.mysql ?? mysql_init(nil)
+
+        var reconnect: UInt8 = 1
+        withUnsafePointer(to: &reconnect) { ptr in
+            if mysql_options(mysql, MYSQL_OPT_RECONNECT, ptr) != 0 {
+                print("WARNING: Error setting MYSQL_OPT_RECONNECT")
+            }
+        }
         
         if mysql_real_connect(mysql, settings.host, settings.user, settings.password,
                               settings.database, settings.port, settings.unixSocket, settings.clientFlag) != nil ||
