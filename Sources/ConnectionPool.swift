@@ -105,6 +105,14 @@ class ConnectionPool {
         item = pool[0]
         pool.removeFirst()
         
+        // Verify that this connection is still alive (i.e. hasn't timed out)
+        // Note: The MYSQL_OPT_RECONNECT flag should already take care of reconnects,
+        // but this is an extra backup just in case it fails
+        if !item.isConnected {
+            // Connection timed out; create a new one
+            item = Connection(settings: connectionSettings)
+        }
+        
         // If we took the last item, we can choose to grow the pool
         if (pool.count == 0 && capacity < limit) {
             capacity += 1
