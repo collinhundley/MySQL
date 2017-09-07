@@ -158,14 +158,14 @@ public class ResultFetcher {
     private static func getSize(field: MYSQL_FIELD) -> Int {
         switch field.type {
         case MYSQL_TYPE_TINY:
-            return MemoryLayout<Int>.size
+            return MemoryLayout<Int8>.size
         case MYSQL_TYPE_SHORT:
-            return MemoryLayout<Int>.size
+            return MemoryLayout<Int16>.size
         case MYSQL_TYPE_INT24,
              MYSQL_TYPE_LONG:
-            return MemoryLayout<Int>.size
+            return MemoryLayout<Int32>.size
         case MYSQL_TYPE_LONGLONG:
-            return MemoryLayout<Int>.size
+            return MemoryLayout<Int64>.size
         case MYSQL_TYPE_FLOAT:
             return MemoryLayout<Float>.size
         case MYSQL_TYPE_DOUBLE:
@@ -207,15 +207,16 @@ public class ResultFetcher {
             
             let type = bind.buffer_type
             switch type {
+            // Note: Here we convert all integer types to Swift Int
             case MYSQL_TYPE_TINY:
-                row.append(buffer.load(as: Int.self))
+                row.append(Int(buffer.load(as: Int8.self)))
             case MYSQL_TYPE_SHORT:
-                row.append(buffer.load(as: Int.self))
+                row.append(Int(buffer.load(as: Int16.self)))
             case MYSQL_TYPE_INT24,
                  MYSQL_TYPE_LONG:
-                row.append(buffer.load(as: Int.self))
+                row.append(Int(buffer.load(as: Int32.self)))
             case MYSQL_TYPE_LONGLONG:
-                row.append(buffer.load(as: Int.self))
+                row.append(Int(buffer.load(as: Int64.self)))
             case MYSQL_TYPE_FLOAT:
                 row.append(buffer.load(as: Float.self))
             case MYSQL_TYPE_DOUBLE:
